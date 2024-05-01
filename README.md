@@ -8,3 +8,4 @@
 
 # QRScan
 
+**_QRScan_** is an advanced, responsive web application that offers a seamless experience for decoding QR codes. Built with Python and leveraging the FastAPI framework, QRScan combines the efficiency of pyzbar for QR code detection and PIL (Pillow) for image processing, making it one of the most effective tools available for QR code scanning. This application is perfect for users and developers looking for a reliable, fast, and easy-to-use QR code scanning solution.
