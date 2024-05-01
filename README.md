@@ -29,7 +29,8 @@ _**Installation**_
 1. Clone the repository:
 ```ShellScript
 git clone https://github.com/Solrikk/QRScan.git
-cd QRScan```
+cd QRScan
+```
 2. Install the required Python packages:
 ```ShellScript
 pip install -r requirements.txt
