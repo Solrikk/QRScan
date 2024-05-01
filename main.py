@@ -8,9 +8,10 @@ import io
 
 app = FastAPI()
 
+
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
-    html_content = """
+  html_content = """
     <!DOCTYPE html>
     <html>
     <head>
@@ -32,20 +33,27 @@ async def read_root():
     </body>
     </html>
     """
-    return HTMLResponse(content=html_content)
+  return HTMLResponse(content=html_content)
+
 
 @app.post("/scan-qr/")
 async def scan_qr(file: UploadFile = File(...)):
-    try:
-        contents = await file.read()
-        image = Image.open(io.BytesIO(contents))
-        decoded_objects = decode(image)
-        if decoded_objects:
-            return {"data": [obj.data.decode() for obj in decoded_objects]}
-        else:
-            return {"data": "No QR code found."}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+  try:
+    contents = await file.read()
+    image = Image.open(io.BytesIO(contents))
+  except IOError as e:
+    raise HTTPException(
+        status_code=400,
+        detail="Cannot open image. Make sure the file is an image.")
+  try:
+    decoded_objects = decode(image)
+    if decoded_objects:
+      return {"data": [obj.data.decode() for obj in decoded_objects]}
+    else:
+      return {"data": []}
+  except Exception as e:
+    raise HTTPException(status_code=500, detail="Failed to decode QR code.")
+
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+  uvicorn.run(app, host="0.0.0.0", port=8000)
