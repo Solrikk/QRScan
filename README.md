@@ -35,3 +35,12 @@ cd QRScan
 ```ShellScript
 pip install -r requirements.txt
 ```
+
+## Pyzbar
+Pyzbar is a Python library that provides a straightforward way to decode and recognize barcodes and QR codes from images or video streams. It serves as a wrapper for the ZBar bar code reader library, a low-level C library designed for barcode recognition from various sources, including images and live cameras. Pyzbar enables leveraging the full power of ZBar without the need to directly interact with C code, offering a convenient Python API instead.
+
+_**Key Features:***_
+
+1. Decode Various Types of Barcodes: Pyzbar supports a plethora of barcodes, including EAN, UPC, Code 128, Code 39, among many others, alongside QR codes.
+2. Work with Images and Video: Through integration with the PIL (Python Imaging Library), Pyzbar can directly work with images loaded or created using PIL. It can also be used with camera feeds by integrating with OpenCV or other video capture libraries.
+3. Ease of Use: Decoding an image to retrieve barcode/QR code data can be done with just a few lines of code. Pyzbar automatically processes the image and returns the decoding results.
