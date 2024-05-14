@@ -1,59 +1,49 @@
-from fastapi import FastAPI, HTTPException, Form, File, UploadFile
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, JSONResponse
-from pyzbar.pyzbar import decode
-from PIL import Image
-import uvicorn
-import io
-
-app = FastAPI()
-
-
-@app.get("/", response_class=HTMLResponse)
-async def read_root():
-  html_content = """
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>QR Code Scanner</title>
-        <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-    </head>
-    <body>
-        <div id="reader" style="width:500px;height:500px;"></div>
-        <script>
-            function onScanSuccess(decodedText, decodedResult) {
-                console.log(`Code matched = ${decodedText}`, decodedResult);
-                alert(`Code matched = ${decodedText}`);
-            }
-
-            var html5QrcodeScanner = new Html5QrcodeScanner(
-                "reader", { fps: 10, qrbox: 250 }, false);
-            html5QrcodeScanner.render(onScanSuccess);
-        </script>
-    </body>
-    </html>
-    """
-  return HTMLResponse(content=html_content)
-
-
-@app.post("/scan-qr/")
-async def scan_qr(file: UploadFile = File(...)):
-  try:
-    contents = await file.read()
-    image = Image.open(io.BytesIO(contents))
-  except IOError as e:
-    raise HTTPException(
-        status_code=400,
-        detail="Cannot open image. Make sure the file is an image.")
-  try:
-    decoded_objects = decode(image)
-    if decoded_objects:
-      return {"data": [obj.data.decode() for obj in decoded_objects]}
-    else:
-      return {"data": []}
-  except Exception as e:
-    raise HTTPException(status_code=500, detail="Failed to decode QR code.")
-
-
-if __name__ == "__main__":
-  uvicorn.run(app, host="0.0.0.0", port=8000)
+function onScanSuccess(decodedText, decodedResult) {
+    console.log(`Код распознан = ${decodedText}`, decodedResult);
+    alert(`Код распознан = ${decodedText}`);
+}
+function onScanError(errorMessage) {
+    // обработать ошибку сканирования
+}
+var html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
+    fps: 10, 
+    qrbox: 600,
+    rememberLastUsedCamera: true, 
+    aspectRatio: 1.777
+});
+html5QrcodeScanner.render(onScanSuccess, onScanError);
+function ping(timeStart) {
+    const timeEnd = performance.now();
+    const ping = timeEnd - timeStart;
+    document.getElementById('ping-value').innerText = `Пинг: ${Math.round(ping)} мс`;
+}
+function updateCameraDetails(details) {
+    const detailsElement = document.getElementById('camera-details');
+    detailsElement.className = "alert alert-info";
+    detailsElement.innerHTML = '<h4>Детали камеры:</h4>';
+    if(details) {
+        detailsElement.innerHTML += `<p>ID: ${details.id}</p>`;
+        detailsElement.innerHTML += `<p>Название: ${details.label}</p>`;
+        detailsElement.innerHTML += `<p>Разрешение: ${details.resolution.width} x ${details.resolution.height}</p>`;
+        detailsElement.innerHTML += '<p id="ping-value">Пинг: Вычисляется...</p>';
+        const timeStart = performance.now();
+        ping(timeStart); // Вызов функции ping для вычисления задержки
+    } else {
+        detailsElement.innerHTML += '<p>Детали недоступны</p>';
+    }
+}
+Html5Qrcode.getCameras().then(devices => {
+    if (devices && devices.length) {
+        const camera = devices[0];
+        updateCameraDetails({
+            id: camera.id,
+            label: camera.label,
+            resolution: { width: 'N/A', height: 'N/A' },
+        });
+    }
+}).catch(err => {
+    console.error("Ошибка получения камер:", err);
+    const detailsElement = document.getElementById('camera-details');
+    detailsElement.className = "alert alert-danger";
+    detailsElement.innerHTML = `<h4>Ошибка:</h4> <p>Запрашиваемое устройство не найдено. Пожалуйста, убедитесь, что к вашему устройству подключена камера и предоставлены разрешения на доступ к камере.</p>`;
+});
