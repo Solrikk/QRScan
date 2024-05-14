@@ -3,15 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <title>QR-Net</title>
-    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="/static/style.css">
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-    <script src="static/scanner.js" defer></script>
+    <script src="/static/scanner.js" defer></script>
 </head>
 <body>
     <div class="container">
         <h2 class="my-5 text-center">QR-Net</h2>
         <div id="reader" class="shadow-lg p-3 mb-5 bg-white rounded"></div>
         <div id="camera-details" class="mt-4"></div>
+        <button onclick="downloadDatabase()" style="display:none;" id="downloadButton">Download Data</button>
+        <script>
+            let qrData = [];
+
+            function downloadDatabase() {
+                const blob = new Blob([qrData.join("\n")], {type: "text/plain"});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "qr-data.txt";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            function onScanSuccess(decodedText, decodedResult) {
+                console.log(`Code detected = ${decodedText}`, decodedResult);
+                qrData.push(decodedText);
+                if (qrData.length === 1) {
+                    document.getElementById('downloadButton').style.display = 'block';
+                }
+            }
+
+            // Call downloadDatabase() after a delay of 15 seconds
+            setTimeout(downloadDatabase, 15000);
+        </script>
     </div>
 </body>
 </html>
