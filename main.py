@@ -3,7 +3,6 @@ function onScanSuccess(decodedText, decodedResult) {
     alert(`Код распознан = ${decodedText}`);
 }
 function onScanError(errorMessage) {
-    // обработать ошибку сканирования
 }
 var html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
     fps: 10, 
@@ -27,7 +26,7 @@ function updateCameraDetails(details) {
         detailsElement.innerHTML += `<p>Разрешение: ${details.resolution.width} x ${details.resolution.height}</p>`;
         detailsElement.innerHTML += '<p id="ping-value">Пинг: Вычисляется...</p>';
         const timeStart = performance.now();
-        ping(timeStart); // Вызов функции ping для вычисления задержки
+        ping(timeStart);
     } else {
         detailsElement.innerHTML += '<p>Детали недоступны</p>';
     }
